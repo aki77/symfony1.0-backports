@@ -1,0 +1,6 @@
+{
+    "name": "aki77/symfony10-backports",
+    "description": "symfony1.0 backports",
+    "type": "library",
+    "bin": ["data/bin/symfony"]
+}
