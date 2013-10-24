@@ -76,7 +76,7 @@ class lime_test
     if (!$result)
     {
       $traces = debug_backtrace();
-      if (!empty($_SERVER['PHP_SELF'])) 
+      if (!empty($_SERVER['PHP_SELF']))
       {
         $i = strstr($traces[0]['file'], $_SERVER['PHP_SELF']) ? 0 : (isset($traces[1]['file']) ? 1 : 0);
       }
@@ -387,10 +387,18 @@ class lime_output_color extends lime_output
 
   public function echoln($message, $colorizer_parameter = null)
   {
-    $message = preg_replace('/(?:^|\.)((?:not ok|dubious) *\d*)\b/e', '$this->colorizer->colorize(\'$1\', \'ERROR\')', $message);
-    $message = preg_replace('/(?:^|\.)(ok *\d*)\b/e', '$this->colorizer->colorize(\'$1\', \'INFO\')', $message);
-    $message = preg_replace('/"(.+?)"/e', '$this->colorizer->colorize(\'$1\', \'PARAMETER\')', $message);
-    $message = preg_replace('/(\->|\:\:)?([a-zA-Z0-9_]+?)\(\)/e', '$this->colorizer->colorize(\'$1$2()\', \'PARAMETER\')', $message);
+    $message = preg_replace_callback('/(?:^|\.)((?:not ok|dubious) *\d*)\b/', function ($matches) {
+        return $this->colorizer->colorize($matches[1], 'ERROR');
+    }, $message);
+    $message = preg_replace_callback('/(?:^|\.)(ok *\d*)\b/', function ($matches) {
+        return $this->colorizer->colorize($matches[1], 'INFO');
+    }, $message);
+    $message = preg_replace_callback('/"(.+?)"/', function ($matches) {
+        return $this->colorizer->colorize($matches[1], 'PARAMETER');
+    }, $message);
+    $message = preg_replace_callback('/(\->|\:\:)?([a-zA-Z0-9_]+?)\(\)/', function ($matches) {
+        return $this->colorizer->colorize($matches[1] . $matches[2] . '()', 'PARAMETER');
+    }, $message);
 
     echo ($colorizer_parameter ? $this->colorizer->colorize($message, $colorizer_parameter) : $message)."\n";
   }

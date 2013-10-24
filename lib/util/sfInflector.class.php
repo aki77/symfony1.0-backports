@@ -28,8 +28,14 @@ class sfInflector
   public static function camelize($lower_case_and_underscored_word)
   {
     $tmp = $lower_case_and_underscored_word;
-    $tmp = sfToolkit::pregtr($tmp, array('#/(.?)#e'    => "'::'.strtoupper('\\1')",
-                                         '/(^|_)(.)/e' => "strtoupper('\\2')"));
+    $replacePairs = array(
+      '#/(.?)#'    => function ($matches) { return '::'.strtoupper($matches[1]); },
+      '/(^|_)(.)/' => function ($matches) { return strtoupper($matches[2]); }
+    );
+
+    foreach ($replacePairs as $pattern => $callback) {
+      $tmp = preg_replace_callback($pattern, $callback, $tmp);
+    }
 
     return $tmp;
   }
