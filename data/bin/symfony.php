@@ -119,6 +119,10 @@ function __autoload($class)
   return simpleAutoloader::__autoload($class);
 }
 
+if (function_exists('spl_autoload_register')) {
+  spl_autoload_register('__autoload');
+}
+
 // trap -V before pake
 if (in_array('-V', $argv) || in_array('--version', $argv))
 {
